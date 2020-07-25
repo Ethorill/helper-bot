@@ -20,6 +20,8 @@ bot = telegram.Bot(token=TELEGRAM_TOKEN)
 def parse_homework_status(homework):
     homework_name = homework.get('homework_name').split('.')[0]
     status_work = homework.get('status')
+    if homework_name is None:
+        logging.error('Мы не получили имя вашей работы :((')
     if status_work != 'rejected' and status_work != 'approved':
         logging.error('Мы получили неверный ответ от Яндекса')
     if status_work == 'rejected' and homework_name is not None:
