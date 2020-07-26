@@ -16,20 +16,24 @@ URL = 'https://praktikum.yandex.ru/api/user_api/homework_statuses/'
 
 bot = telegram.Bot(token=TELEGRAM_TOKEN)
 
+statuses = ['rejected', 'approved']
+
 
 def parse_homework_status(homework):
-    homework_name = homework.get('homework_name').split('.')[0]
+    homework_name = homework.get('homework_name')
     status_work = homework.get('status')
-    if homework_name is None:
-        logging.error('Мы не получили имя вашей работы :((')
-    if status_work != 'rejected' and status_work != 'approved':
+    if homework_name is None or status_work is None:
+        logging.error('Не был получин один из параметров')
+        return 'У вас проверили работу'
+
+    homework_name = homework_name.split('.')[0]
+    if status_work not in statuses:
         logging.error('Мы получили неверный ответ от Яндекса')
-    if status_work == 'rejected' and homework_name is not None:
+    if status_work == statuses[0]:
         verdict = 'К сожалению в работе нашлись ошибки.'
-        return f'У вас проверили работу "{homework_name}"!\n\n{verdict}'
-    if status_work == 'approved' and homework_name is not None:
+    if status_work == statuses[1]:
         verdict = 'Ревьюеру всё понравилось, можно приступать к следующему уроку.'
-        return f'У вас проверили работу "{homework_name}"!\n\n{verdict}'
+    return f'У вас проверили работу "{homework_name}"!\n\n{verdict}'
 
 
 def get_homework_statuses(current_timestamp):
